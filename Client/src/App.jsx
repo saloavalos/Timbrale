@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import logo from "./logo.svg";
+// import logo from "./logo.svg";
 import "./App.css";
 // Socket.io
 import { io } from "socket.io-client";
@@ -21,8 +21,10 @@ function App() {
 
   return (
     <div className="App">
-      <p>fefe</p>
-      <p>fefe</p>
+      {/* <Navbar /> */}
+      <p class="bg-slate-600 h-40">Lorem ipsum dolor sit.</p>
+      <span className="bg-"></span>
+      <p className="text-white jus"></p>
     </div>
   );
 }
