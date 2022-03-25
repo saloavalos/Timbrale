@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 // To use tailwindcss
 import "./index.css";
-import "./style/reset.scss";
+import "./style/reset.css";
 import App from "./App";
 
 ReactDOM.render(

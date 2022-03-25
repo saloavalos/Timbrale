@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-// import logo from "./logo.svg";
-import "./App.css";
 // Socket.io
 import { io } from "socket.io-client";
 // nanoid
 import { nanoid } from "nanoid";
+import BellIcon from "./components/BellIcon";
+import Navbar from "./components/Navbar";
+import RingEachUser from "./components/RingEachUser";
 
 function App() {
   // const [count, setCount] = useState(0);
@@ -20,11 +21,18 @@ function App() {
   }, []);
 
   return (
-    <div className="App">
-      {/* <Navbar /> */}
-      <p class="bg-slate-600 h-40">Lorem ipsum dolor sit.</p>
-      <span className="bg-"></span>
-      <p className="text-white jus"></p>
+    <div>
+      <Navbar />
+      <div className="px-4">
+        <p className="mb-2 mt-6 font-regular text-lg text-header text-center">
+          Usuarios en linea (<span className="text-paragraph">2</span>)
+        </p>
+        <div className="flex items-center justify-center border-[1.5px] border-header rounded-md py-1.5 px-3 w-fit m-auto">
+          <p className="mr-2 text-2xl font-semibold">Timbrarle a todos</p>
+          <BellIcon primaryColor={"#8357ff"} secondaryColor={"#DACDFF"} />
+        </div>
+        <RingEachUser />
+      </div>
     </div>
   );
 }
