@@ -27,7 +27,7 @@ function App() {
         <p className="mb-2 mt-6 font-regular text-lg text-header text-center">
           Usuarios en linea (<span className="text-paragraph">2</span>)
         </p>
-        <div className="flex items-center justify-center border-[1.5px] border-header rounded-md py-1.5 px-3 w-fit m-auto">
+        <div className="cursor-pointer relative bg-white flex items-center justify-center border border-header rounded-md py-1.5 px-3 w-fit m-auto before:absolute before:top-2 before:left-2 before:w-full before:h-full before:border before:border-primary before:rounded-md before:-z-10">
           <p className="mr-2 text-2xl font-semibold">Timbrarle a todos</p>
           <BellIcon primaryColor={"#8357ff"} secondaryColor={"#DACDFF"} />
         </div>

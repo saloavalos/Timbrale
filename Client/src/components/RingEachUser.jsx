@@ -5,8 +5,13 @@ import expandIcon from "../assets/expand-icon.svg";
 const RingEachUser = () => {
   const [ringIconSize, setringIconSize] = useState("55");
 
+  const handleNormalRing = () => {
+    alert("Normal");
+  };
+  const handleUrgentRing = () => {};
+
   return (
-    <div className="mt-8 border-[1.5px] rounded-md p-4">
+    <div className="mt-8 border rounded-md p-4">
       <div className="flex ">
         <div className="w-14 mr-3">
           <img src="/src/assets/user123-profile.png" alt="Foto perfil" />
@@ -28,7 +33,7 @@ const RingEachUser = () => {
       </div>
 
       <div className="flex justify-center space-x-6 mt-4">
-        <div className="flex items-center flex-col">
+        <div className="flex items-center flex-col" onClick={handleNormalRing}>
           <BellIcon
             primaryColor={"#FFE357"}
             secondaryColor={"#FFF7CD"}
@@ -36,7 +41,7 @@ const RingEachUser = () => {
           />
           <span>Normal</span>
         </div>
-        <div className="flex items-center flex-col">
+        <div className="flex items-center flex-col" onClick={handleUrgentRing}>
           <BellIcon
             primaryColor={"#FF5757"}
             secondaryColor={"#FFCDCD"}
