@@ -7,10 +7,6 @@
 *::selection {
   background-color: #8357ff;
 }
-body {
-  min-height: 100vh;
-  background-color: white;
-}
 
 /* // to enable smooth scrolling for the whole page
  html {

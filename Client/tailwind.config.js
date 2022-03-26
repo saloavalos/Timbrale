@@ -12,6 +12,7 @@ module.exports = {
         yellowSecondary: "#FFF7CD",
         redPrimary: "#FF5757",
         redSecondary: "#FFCDCD",
+        purpleDark: "#C6B3FF",
       },
       fonFamily: {
         sans: ['"Open Sans"', "sans-serif"],

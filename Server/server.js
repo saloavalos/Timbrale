@@ -1,4 +1,5 @@
 import { Server } from "socket.io";
+import users from "./users.js";
 
 const io = new Server({
   cors: {
@@ -10,8 +11,10 @@ const io = new Server({
 io.on("connection", (socket) => {
   console.log(`Someone has connected: ${socket.id}`);
 
-  io.on("disconnect", () => {
-    console.log(`--${socket.id} disconnected: `);
+  // If logged in successfully
+
+  socket.on("disconnect", () => {
+    console.log(`--${socket.id} left`);
   });
 });
 

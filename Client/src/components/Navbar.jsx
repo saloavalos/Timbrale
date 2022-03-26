@@ -1,11 +1,11 @@
 import { useState } from "react";
 import userProfilePhoto from "/src/assets/user-profile.png";
 
-const Navbar = () => {
+const Navbar = ({ user }) => {
   const [isEditProfileMenuActive, setIsEditProfileMenuActive] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50">
+    <nav className="sticky top-0 z-50 bg-white">
       {isEditProfileMenuActive && (
         <div className="bg-header w-full h-screen absolute opacity-60 z-10"></div>
       )}
@@ -15,7 +15,9 @@ const Navbar = () => {
         </div>
         <div className=" md:items-center relative z-20">
           <div
-            className="w-14 md:mr-2 cursor-pointer"
+            className={`w-14 md:mr-2 cursor-pointer ${
+              !user ? "invisible" : ""
+            }`}
             onClick={() => setIsEditProfileMenuActive(!isEditProfileMenuActive)}
           >
             <img src={userProfilePhoto} alt="Foto perfil" />
