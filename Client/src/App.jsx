@@ -7,19 +7,49 @@ import BellIcon from "./components/BellIcon";
 import Navbar from "./components/Navbar";
 import RingEachUser from "./components/RingEachUser";
 import Button from "./components/Button";
+// Spinner
+import SyncLoader from "react-spinners/SyncLoader";
 
 function App() {
+  const [username, setUsername] = useState("");
   const [user, setUser] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [socket, setSocket] = useState(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     // I use this url instead of localhost because doing it this way I can access from any device on same network
-    const socket = io("http://192.168.100.150:1010");
+    setSocket(io("http://192.168.100.150:1010"));
     // const socket = io("http://localhost:1010");
-    console.log(socket);
 
     // random id of length 4
     console.log("nanoid: " + nanoid(4));
   }, []);
+
+  const handleLogin = () => {
+    if (!username) {
+      setError("*El nombre está vacio");
+      return;
+    } else if (username.length > 8) {
+      setError("*El nombre debe ser 8 caracteres maximo");
+      return;
+    }
+
+    // Temporal code - Remove later
+    setIsLoading(true);
+    setTimeout(() => {
+      setUser(username);
+      setIsLoading(false);
+    }, 2000);
+  };
+
+  useEffect(() => {
+    // So that it does not run in the first render of the page when its value it's empty
+    if (user) {
+      socket?.emit("Login", user);
+      console.log("Mandando a server username", user.length);
+    }
+  }, [user]);
 
   return (
     <div>
@@ -48,9 +78,16 @@ function App() {
                 type="text"
                 placeholder="Fulanito"
                 className="w-full border border-header rounded-md py-2 px-3 focus:outline-primary text-xl "
+                onChange={(e) => setUsername(e.target.value)}
               />
+              {error && <p className="text-redPrimary">{error}</p>}
             </div>
-            <Button>Iniciar sesión</Button>
+            <Button text={"Iniciar sesión"} onClick={handleLogin} />
+            {isLoading && (
+              <div className="flex justify-center mt-8">
+                <SyncLoader loading={isLoading} size={12} color={"#8357ff"} />
+              </div>
+            )}
           </div>
         )}
       </div>

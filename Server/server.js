@@ -11,6 +11,12 @@ const io = new Server({
 io.on("connection", (socket) => {
   console.log(`Someone has connected: ${socket.id}`);
 
+  socket.on("Login", (username) => {
+    if (username === "Max") {
+      console.log("inicio exitoso");
+    }
+  });
+
   // If logged in successfully
 
   socket.on("disconnect", () => {
