@@ -25,6 +25,12 @@ function App() {
 
     // random id of length 4
     console.log("nanoid: " + nanoid(4));
+
+    // If is not null it means there is a user logged in
+    if (localStorage.getItem("username") !== null) {
+      // we get username and pass it to the state, so that the useEffect automatically tries to log in the user again
+      setUser(localStorage.getItem("username"));
+    }
   }, []);
 
   const handleLogin = () => {
@@ -56,9 +62,15 @@ function App() {
   }, [user]);
 
   useEffect(() => {
-    socket?.on("loginResponse", (data) => {
-      console.log(data.loginStatus);
-      setIsLoggedIn(data.loginStatus);
+    socket?.on("loginResponse", ({ loginStatus, userData }) => {
+      console.log(loginStatus);
+      if (loginStatus) {
+        setIsLoggedIn(loginStatus);
+        console.log("asignando username a localStorage");
+        localStorage.setItem("username", userData.username);
+      } else {
+        setError("*Usuario no encontrado");
+      }
     });
   }, [socket]);
 
@@ -66,7 +78,7 @@ function App() {
     <div>
       <Navbar user={user} isLoggedIn={isLoggedIn} />
       <div className="px-4 flex justify-center mt-6">
-        {isLoggedIn ? (
+        {isLoggedIn || localStorage.getItem("username") !== null ? (
           /* This would be the main page that the user sees when is logged in */
           <div>
             <p className="mb-2 font-regular text-lg text-header text-center">
