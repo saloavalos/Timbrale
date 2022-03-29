@@ -8,12 +8,33 @@ const io = new Server({
   },
 });
 
-io.on("connection", (socket) => {
-  console.log(`Someone has connected: ${socket.id}`);
+let onlineUsers = [];
 
-  socket.on("Login", (username) => {
-    if (username === "Max") {
-      console.log("inicio exitoso");
+// if (onlineUsers) socket.emit("onlineUserUpdated", onlineUsers);
+
+const findUser = (username) => {
+  !onlineUsers.some((user) => user.username === username) &&
+    onlineUsers.push({ username, socketId });
+};
+
+const getUserData = (username) => {
+  return users.find((user) => user.username === username);
+};
+
+io.on("connection", (socket) => {
+  console.log("Users connected: " + io.of("/").sockets.size);
+  console.log(`Someone has connected ip: ${socket.conn.remoteAddress}`);
+
+  socket.on("LogIn", (username) => {
+    if (getUserData(username)) {
+      console.log("Login exitoso");
+      socket.emit("loginResponse", {
+        loginStatus: true,
+        userData: getUserData(username),
+      });
+    } else {
+      console.log("Usuario no encontrado");
+      socket.emit("loginResponse", { loginStatus: false });
     }
   });
 

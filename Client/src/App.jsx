@@ -13,6 +13,7 @@ import SyncLoader from "react-spinners/SyncLoader";
 function App() {
   const [username, setUsername] = useState("");
   const [user, setUser] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [socket, setSocket] = useState(null);
   const [error, setError] = useState("");
@@ -31,32 +32,42 @@ function App() {
       setError("*El nombre está vacio");
       return;
     } else if (username.length > 8) {
-      setError("*El nombre debe ser 8 caracteres maximo");
+      setError("*El nombre supera 8 caracteres");
       return;
     }
 
-    // Temporal code - Remove later
     setIsLoading(true);
+
+    // I do not need a loading animation because the login is so quick
+    // but I wanted implement it
     setTimeout(() => {
       setUser(username);
       setIsLoading(false);
     }, 2000);
   };
 
+  // when these is trigger it means we click login button and it was a valid username so we can try to log in
   useEffect(() => {
     // So that it does not run in the first render of the page when its value it's empty
     if (user) {
-      socket?.emit("Login", user);
-      console.log("Mandando a server username", user.length);
+      socket?.emit("LogIn", user);
+      console.log("Mandando a server username:", user);
     }
   }, [user]);
 
+  useEffect(() => {
+    socket?.on("loginResponse", (data) => {
+      console.log(data.loginStatus);
+      setIsLoggedIn(data.loginStatus);
+    });
+  }, [socket]);
+
   return (
     <div>
-      <Navbar user={user} />
+      <Navbar user={user} isLoggedIn={isLoggedIn} />
       <div className="px-4 flex justify-center mt-6">
-        {user ? (
-          /* This would the main page that the user sees when is logged in */
+        {isLoggedIn ? (
+          /* This would be the main page that the user sees when is logged in */
           <div>
             <p className="mb-2 font-regular text-lg text-header text-center">
               Usuarios en linea (<span className="text-paragraph">2</span>)

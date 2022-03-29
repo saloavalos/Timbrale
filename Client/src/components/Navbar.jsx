@@ -1,7 +1,7 @@
 import { useState } from "react";
 import userProfilePhoto from "/src/assets/user-profile.png";
 
-const Navbar = ({ user }) => {
+const Navbar = ({ user, isLoggedIn }) => {
   const [isEditProfileMenuActive, setIsEditProfileMenuActive] = useState(false);
 
   return (
@@ -16,7 +16,7 @@ const Navbar = ({ user }) => {
         <div className=" md:items-center relative z-20">
           <div
             className={`w-14 md:mr-2 cursor-pointer ${
-              !user ? "invisible" : ""
+              !isLoggedIn ? "invisible" : ""
             }`}
             onClick={() => setIsEditProfileMenuActive(!isEditProfileMenuActive)}
           >
