@@ -74,6 +74,13 @@ function App() {
     });
   }, [socket]);
 
+  // To detect Enter not only click
+  const handleEnterLogIn = (event) => {
+    if (event.key === "Enter") {
+      handleLogin();
+    }
+  };
+
   return (
     <div>
       <Navbar user={user} isLoggedIn={isLoggedIn} />
@@ -100,8 +107,11 @@ function App() {
               <input
                 type="text"
                 placeholder="Fulanito"
-                className="w-full border border-header rounded-md py-2 px-3 focus:outline-primary text-xl "
+                className={`w-full border border-header rounded-md py-2 px-3 text-xl ${
+                  error ? "focus:outline-redPrimary" : "focus:outline-primary"
+                }`}
                 onChange={(e) => setUsername(e.target.value)}
+                onKeyPress={handleEnterLogIn}
               />
               {error && <p className="text-redPrimary">{error}</p>}
             </div>
