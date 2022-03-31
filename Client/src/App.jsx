@@ -42,6 +42,8 @@ function App() {
       return;
     }
 
+    // clean any error ocured in client validation
+    setError("");
     setIsLoading(true);
 
     // I do not need a loading animation because the login is so quick
@@ -107,8 +109,10 @@ function App() {
               <input
                 type="text"
                 placeholder="Fulanito"
-                className={`w-full border border-header rounded-md py-2 px-3 text-xl ${
-                  error ? "focus:outline-redPrimary" : "focus:outline-primary"
+                className={`w-full border  rounded-md py-2 px-3 text-xl ${
+                  error
+                    ? "focus:outline-redPrimary border-redPrimary animate-input-shake-animation"
+                    : "focus:outline-primary border-header"
                 }`}
                 onChange={(e) => setUsername(e.target.value)}
                 onKeyPress={handleEnterLogIn}
