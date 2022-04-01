@@ -4,4 +4,9 @@ export default [
     username: "Max",
     profileImg: "",
   },
+  {
+    userID: 2,
+    username: "James",
+    profileImg: "",
+  },
 ];

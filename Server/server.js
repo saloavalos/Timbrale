@@ -8,13 +8,40 @@ const io = new Server({
   },
 });
 
+// It obviously works to know which users are online,
+// but more importantly to know which user to send a certain message to,
+// because here are their socketIds to be able to emit.to()
+// ** Here I can store multiple sockets for the same user
+// ** making posible multiple connections from the same account
 let onlineUsers = [];
 
-// if (onlineUsers) socket.emit("onlineUserUpdated", onlineUsers);
+const addNewUserToOnlineUsers = (username, id) => {
+  // If the user is not store in the array save it
+  !onlineUsers.some((user) => user.username === username)
+    ? onlineUsers.push({ username, socketID: [id] })
+    : // If the user is already logged in on another device, we add its socketId
+      onlineUsers.some((user) => {
+        user.username === username && user.socketID.push(id);
+      });
+};
 
-const findUser = (username) => {
-  !onlineUsers.some((user) => user.username === username) &&
-    onlineUsers.push({ username, socketId });
+const removeUserFromOnlineUsers = (id) => {
+  // If the user has has only one socket id we delete the user along with its socket id
+  onlineUsers.some((user) => user.socketID.length === 1)
+    ? (onlineUsers = onlineUsers.filter(
+        (user) => !user.socketID.find((eachSocketId) => eachSocketId === id)
+      ))
+    : // If the user has mora than 1 socket id we just delete the indicated socket id
+      onlineUsers.map((user) => {
+        user.socketID = user.socketID.filter(
+          (eachSocketId) => eachSocketId !== id
+        );
+        console.log("sockets-ids restantes : " + user.socketID);
+      });
+};
+
+const getOnlineUserData = (username) => {
+  return onlineUsers.find((user) => user.username === username);
 };
 
 const getUserData = (username) => {
@@ -22,26 +49,38 @@ const getUserData = (username) => {
 };
 
 io.on("connection", (socket) => {
-  console.log("Users connected: " + io.of("/").sockets.size);
   console.log(`Someone has connected ip: ${socket.conn.remoteAddress}`);
 
   socket.on("LogIn", (username) => {
     if (getUserData(username)) {
       console.log("Login exitoso");
-      socket.emit("loginResponse", {
+      console.log("Users connected: " + io.of("/").sockets.size);
+
+      addNewUserToOnlineUsers(username, socket.id);
+      // const receiver = getOnlineUserData(username);
+      io.to(socket.id).emit("loginResponse", {
         loginStatus: true,
         userData: getUserData(username),
       });
+      console.log(
+        "Arreglo de usuarios en linea:" + JSON.stringify(onlineUsers)
+      );
+      // Notify all users how many users are online
+      io.emit("onlineUsers", onlineUsers.length);
     } else {
       console.log("Usuario no encontrado");
-      socket.emit("loginResponse", { loginStatus: false });
+      io.to(socket.id).emit("loginResponse", {
+        loginStatus: false,
+      });
     }
   });
 
-  // If logged in successfully
-
   socket.on("disconnect", () => {
-    console.log(`--${socket.id} left`);
+    console.log(`Socketd.id : ${socket.id} left`);
+    removeUserFromOnlineUsers(socket.id);
+    // Notify all users how many users are online
+    io.emit("onlineUsers", onlineUsers.length);
+    console.log("Online users: " + JSON.stringify(onlineUsers));
   });
 });
 
