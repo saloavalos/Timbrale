@@ -1,7 +1,7 @@
 import { useState } from "react";
 import userProfilePhoto from "/src/assets/user-profile.png";
 
-const Navbar = ({ user, isLoggedIn }) => {
+const Navbar = ({ isLoggedIn }) => {
   const [isEditProfileMenuActive, setIsEditProfileMenuActive] = useState(false);
 
   return (

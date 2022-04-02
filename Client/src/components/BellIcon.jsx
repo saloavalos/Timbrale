@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 const BellIcon = ({ primaryColor, secondaryColor, size }) => {
-  const [sizeSVG, setSizeSVG] = useState(size);
+  const [sizeSVG, setSizeSVG] = useState(30);
 
   useEffect(() => {
     // If we receive from props a size it means we do not want to use the default size
