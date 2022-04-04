@@ -28,8 +28,14 @@ function App() {
   }, []);
 
   // If the server/socket has some changes we check them with .on
-  // as long as there is a socket connection established
+  // as long as "socket state" is not null
   useEffect(() => {
+    // If there was an error trying to connect to server
+    socket?.on("connect_error", () => {
+      // Stops trying to reconnect/establish the connection
+      socket.disconnect();
+    });
+
     socket?.on("loginResponse", ({ loginStatus, userData }) => {
       if (loginStatus) {
         console.log("asignando username a localStorage");
