@@ -9,4 +9,9 @@ export default [
     username: "James",
     profileImg: "",
   },
+  {
+    userID: 3,
+    username: "Salo",
+    profileImg: "",
+  },
 ];

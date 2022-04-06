@@ -51,7 +51,7 @@ const getUserData = (username) => {
 io.on("connection", (socket) => {
   console.log(`Someone has connected ip: ${socket.conn.remoteAddress}`);
 
-  socket.on("LogIn", (username) => {
+  socket.on("logIn", (username) => {
     if (getUserData(username)) {
       console.log("Login exitoso");
       console.log("Users connected: " + io.of("/").sockets.size);
@@ -65,8 +65,8 @@ io.on("connection", (socket) => {
       console.log(
         "Arreglo de usuarios en linea:" + JSON.stringify(onlineUsers)
       );
-      // Notify all users how many users are online
-      io.emit("onlineUsers", onlineUsers.length);
+      // Notify all users how many users are online and pass their data
+      io.emit("onlineUsers", onlineUsers);
     } else {
       console.log("Usuario no encontrado");
       io.to(socket.id).emit("loginResponse", {
@@ -78,8 +78,8 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log(`Socketd.id : ${socket.id} left`);
     removeUserFromOnlineUsers(socket.id);
-    // Notify all users how many users are online
-    io.emit("onlineUsers", onlineUsers.length);
+    // Notify all users how many users are online and pass their data
+    io.emit("onlineUsers", onlineUsers);
     console.log("Online users: " + JSON.stringify(onlineUsers));
   });
 });

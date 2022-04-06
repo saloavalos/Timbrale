@@ -2,7 +2,7 @@ import { useState } from "react";
 import BellIcon from "./BellIcon";
 import expandIcon from "../assets/expand-icon.svg";
 
-const RingEachUser = () => {
+const RingEachUser = ({ eachUserData }) => {
   const [ringIconSize, setringIconSize] = useState("55");
 
   const handleNormalRing = () => {
@@ -19,7 +19,7 @@ const RingEachUser = () => {
 
         <div className="w-full">
           <div className="flex justify-between">
-            <p className="font-semibold text-xl">James</p>
+            <p className="font-semibold text-xl">{eachUserData.username}</p>
 
             {/* TODO - Will be visible when it really expands sth */}
             {/* <div className="cursor-pointer">
