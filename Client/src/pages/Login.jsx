@@ -5,24 +5,11 @@ import SyncLoader from "react-spinners/SyncLoader";
 // Context
 import { MainContext } from "../contexts/MainContext";
 
-const login = () => {
+const login = ({ user, setUser }) => {
   const [username, setUsername] = useState("");
-  const [user, setUser] = useState("");
-
   // Context values
   const { socket, isLoginIn, setIsLoginIn, errorLoginIn, setErrorLoginIn } =
     useContext(MainContext);
-
-  useEffect(() => {
-    // If isn't null it means there was a user logged in
-    // and there is not socket created
-    if (localStorage.getItem("username") !== null && !socket) {
-      // we get username and pass it to the state, so that the useEffect automatically tries to log in the user again
-      setUser(localStorage.getItem("username"));
-      // Start loading animation for the login process, but this animation covers the whole page
-      setIsLoginIn(true);
-    }
-  }, []);
 
   const handleLogin = () => {
     if (!username) {
@@ -67,9 +54,11 @@ const login = () => {
   return (
     // If there is a username stored in locaStoarge we have to try to login automatically,
     // so we show a loading animation while the login process is done
-    isLoginIn && localStorage.getItem("username") !== null ? (
+    // isLoginIn && localStorage.getItem("username") !== null ? (
+    isLoginIn ? (
       <div className="flex justify-center items-center h-[65vh]">
         <SyncLoader loading={isLoginIn} size={12} color={"#8357ff"} />
+        login
       </div>
     ) : (
       // If there is no username stored in localStorage or
