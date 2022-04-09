@@ -5,11 +5,17 @@ import SyncLoader from "react-spinners/SyncLoader";
 // Context
 import { MainContext } from "../contexts/MainContext";
 
-const login = ({ user, setUser }) => {
+const login = ({ user }) => {
   const [username, setUsername] = useState("");
   // Context values
-  const { socket, isLoginIn, setIsLoginIn, errorLoginIn, setErrorLoginIn } =
-    useContext(MainContext);
+  const {
+    socket,
+    isLoginIn,
+    setIsLoginIn,
+    errorLoginIn,
+    setErrorLoginIn,
+    setUser,
+  } = useContext(MainContext);
 
   const handleLogin = () => {
     if (!username) {
@@ -58,7 +64,6 @@ const login = ({ user, setUser }) => {
     isLoginIn ? (
       <div className="flex justify-center items-center h-[65vh]">
         <SyncLoader loading={isLoginIn} size={12} color={"#8357ff"} />
-        login
       </div>
     ) : (
       // If there is no username stored in localStorage or

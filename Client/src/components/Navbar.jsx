@@ -7,15 +7,18 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const [isProfileMenuActive, setIsProfileMenuActive] = useState(false);
 
   // Context values
-  const { socket, currentUserData, setIsLoginIn } = useContext(MainContext);
+  const { socket, currentUserData, setIsLoginIn, setUser } =
+    useContext(MainContext);
 
   const handleLogout = () => {
-    // socket.emit("logOut", currentUserData.username);
     // Clear username stored in localStorage
     localStorage.removeItem("username");
     setIsProfileMenuActive(false);
     // It notifies all online user that this user left
     socket.disconnect();
+    // Clear user state, so that when login component is mounted
+    // it doesn't tries to use user to log in
+    setUser("");
     // This stop the animation on login (animation when you click log in)
     setIsLoginIn(false);
     setIsLoggedIn(false);
@@ -60,6 +63,12 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
               onClick={handleLogout}
             >
               Cerrar sesión
+            </li>
+            <li
+              className="font-regular text-lg cursor-pointer"
+              onClick={handleLogout}
+            >
+              Cerrar todas las sesiones
             </li>
           </ul>
         </div>

@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 // Socket.io
 import { io } from "socket.io-client";
-// nanoid
-import { nanoid } from "nanoid";
 // Components
 import Navbar from "./components/Navbar";
 // Pages
@@ -26,7 +24,8 @@ function App() {
   // it store the username which he will try to use to log in
   const [user, setUser] = useState("");
 
-  // To redirect and show login page when user is logged out or has not log in yet, or for example maybe the server was restarted or closed
+  // If the server/socket has some changes we check them with .on
+  // as long as "socket state" is not null
   useEffect(() => {
     // To avoid have multiple socket connnections on same tab of browser
     if (!socket) {
@@ -35,21 +34,19 @@ function App() {
       // const socket = io("http://localhost:1010");
       console.log("Se crea una nueva conexion socket");
     }
-    // random id of length 4
-    // console.log("nanoid: " + nanoid(4));
-  }, []);
 
-  // If the server/socket has some changes we check them with .on
-  // as long as "socket state" is not null
-  useEffect(() => {
     // If server restarts or something similar
     socket?.on("disconnect", () => {
       // To redirect to login and if needed login automatically
+      // bc maybe user is logged out, or for example maybe the server was restarted or closed
       setIsLoggedIn(false);
       // Maybe was it was disconnect bc of a server restart so,
       // we start the loading animation for the login process, but this animation covers the whole page
       setIsLoginIn(true);
       console.log("Disconnected from server");
+
+      // Try to reset socket manully
+      setSocket(null);
     });
 
     // If there was an error trying to connect to server
@@ -125,6 +122,7 @@ function App() {
           errorLoginIn,
           setErrorLoginIn,
           currentUserData,
+          setUser,
         }}
       >
         <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
@@ -135,7 +133,7 @@ function App() {
               <p>Sigue intentando o intenta más tarde</p>{" "}
             </div>
           ) : !isLoggedIn ? (
-            <Login user={user} setUser={setUser} />
+            <Login user={user} />
           ) : (
             <Dashboard onlineUsers={onlineUsers} />
           )}
