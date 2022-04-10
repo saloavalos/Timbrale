@@ -20,9 +20,12 @@ function App() {
   const [currentUserData, setCurrentUserData] = useState({});
   const [hasProblemsConnectingToServer, setHasProblemsConnectingToServer] =
     useState(false);
-  const [isRingRequest, setIsRingRequest] = useState(false);
   // it store the username which he will try to use to log in
   const [user, setUser] = useState("");
+  // For popup to show when someone is calling you
+  const [isRinging, setIsRinging] = useState(false);
+  const [ringSender, setRingSender] = useState("");
+  const [ringPriority, setRingPriority] = useState(0);
 
   // If the server/socket has some changes we check them with .on
   // as long as "socket state" is not null
@@ -79,11 +82,6 @@ function App() {
       setOnlineUsers(data);
     });
 
-    socket?.on("ringRequest", ({ sender, priority }) => {
-      //
-      setIsRingRequest(true);
-    });
-
     // when it connects to the server
     socket?.on("connect", () => {
       console.log("Client - connected");
@@ -103,8 +101,11 @@ function App() {
       }
     });
 
-    socket?.on("reconnect", () => {
-      console.log("reconnecting");
+    socket?.on("rinReceived", ({ sender, priority }) => {
+      setRingSender(sender);
+      setRingPriority(priority);
+      setIsRinging(true);
+      console.log("Ring received from : " + sender);
     });
   }, [socket]);
 
@@ -112,7 +113,9 @@ function App() {
     <div>
       {
         // Notifications from other online user calling to you
-        isRingRequest && <PopupRing sender={"rrg"} />
+        isRinging && (
+          <PopupRing ringSender={ringSender} ringPriority={ringPriority} />
+        )
       }
       <MainContext.Provider
         value={{
@@ -122,6 +125,7 @@ function App() {
           errorLoginIn,
           setErrorLoginIn,
           currentUserData,
+          user,
           setUser,
         }}
       >
@@ -133,7 +137,7 @@ function App() {
               <p>Sigue intentando o intenta más tarde</p>{" "}
             </div>
           ) : !isLoggedIn ? (
-            <Login user={user} />
+            <Login />
           ) : (
             <Dashboard onlineUsers={onlineUsers} />
           )}

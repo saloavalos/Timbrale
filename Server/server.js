@@ -75,6 +75,24 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("ringToUser", ({ sender, receiver, priority }) => {
+    // Get Sockets id from the receiver
+    const receiverSocketsId = [];
+    onlineUsers.map((user) => {
+      user.username === receiver &&
+        user.socketID.filter((eachSocketId) =>
+          receiverSocketsId.push(eachSocketId)
+        );
+    });
+
+    console.log("sockets del receiver : " + receiverSocketsId);
+    // notify to a range of socket ids with the same username of receiver because maybe the reciver has multiple sessions open
+    receiverSocketsId?.map((eachSocketIdFromReceiver) => {
+      // send notification to receiver
+      io.to(eachSocketIdFromReceiver).emit("rinReceived", { sender, priority });
+    });
+  });
+
   socket.on("disconnect", () => {
     console.log(`Socketd.id : ${socket.id} left`);
     removeUserFromOnlineUsers(socket.id);

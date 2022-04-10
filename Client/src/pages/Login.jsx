@@ -5,7 +5,7 @@ import SyncLoader from "react-spinners/SyncLoader";
 // Context
 import { MainContext } from "../contexts/MainContext";
 
-const login = ({ user }) => {
+const login = () => {
   const [username, setUsername] = useState("");
   // Context values
   const {
@@ -14,6 +14,7 @@ const login = ({ user }) => {
     setIsLoginIn,
     errorLoginIn,
     setErrorLoginIn,
+    user,
     setUser,
   } = useContext(MainContext);
 

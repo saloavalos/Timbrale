@@ -1,14 +1,26 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import BellIcon from "./BellIcon";
 import expandIcon from "../assets/expand-icon.svg";
+// Context
+import { MainContext } from "../contexts/MainContext";
 
 const RingEachUser = ({ eachUserData }) => {
   const [ringIconSize, setringIconSize] = useState("55");
+  // Context values
+  const { socket, user } = useContext(MainContext);
 
   const handleNormalRing = () => {
     alert("Normal");
   };
   const handleUrgentRing = () => {};
+
+  const handleRingToAnotherUser = (priority) => {
+    socket?.emit("ringToUser", {
+      sender: user,
+      receiver: eachUserData.username,
+      priority: priority,
+    });
+  };
 
   return (
     <div className="mt-8 border rounded-md p-4">
@@ -33,7 +45,10 @@ const RingEachUser = ({ eachUserData }) => {
       </div>
 
       <div className="flex justify-center space-x-6 mt-4">
-        <div className="flex items-center flex-col" onClick={handleNormalRing}>
+        <div
+          className="flex items-center flex-col"
+          onClick={() => handleRingToAnotherUser()}
+        >
           <BellIcon
             primaryColor={"#FFE357"}
             secondaryColor={"#FFF7CD"}
@@ -41,7 +56,10 @@ const RingEachUser = ({ eachUserData }) => {
           />
           <span>Normal</span>
         </div>
-        <div className="flex items-center flex-col" onClick={handleUrgentRing}>
+        <div
+          className="flex items-center flex-col"
+          onClick={() => handleRingToAnotherUser(2)}
+        >
           <BellIcon
             primaryColor={"#FF5757"}
             secondaryColor={"#FFCDCD"}
