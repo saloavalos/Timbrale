@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import BellIcon from "./BellIcon";
 import Button from "./Button";
+// Palette of colors
+import colors from "../style/colors";
 
 const PopupRing = ({ ringSender, ringPriority }) => {
   const [ringIconSize, setringIconSize] = useState("140");
@@ -10,7 +12,7 @@ const PopupRing = ({ ringSender, ringPriority }) => {
   useEffect(() => {
     // Normal priority
     if (!ringPriority) {
-      setPrimaryColor("#FFE357");
+      setPrimaryColor(colors.primary);
       setSecondaryColor("#FFF7CD");
       console.log("Timbre normal");
     } else if (ringPriority === 2) {
