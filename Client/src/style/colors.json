@@ -8,5 +8,7 @@
   "yellowSecondary": "#FFF7CD",
   "redPrimary": "#FF5757",
   "redSecondary": "#FFCDCD",
-  "purpleDark": "#C6B3FF"
+  "purpleDark": "#C6B3FF",
+  "otherPrimary": "#57C1FF",
+  "otherSecondary": "#CDEDFF"
 }

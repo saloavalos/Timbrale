@@ -9,11 +9,6 @@ const RingEachUser = ({ eachUserData }) => {
   // Context values
   const { socket, user } = useContext(MainContext);
 
-  const handleNormalRing = () => {
-    alert("Normal");
-  };
-  const handleUrgentRing = () => {};
-
   const handleRingToAnotherUser = (priority) => {
     socket?.emit("ringToUser", {
       sender: user,
@@ -47,7 +42,7 @@ const RingEachUser = ({ eachUserData }) => {
       <div className="flex justify-center space-x-6 mt-4">
         <div
           className="flex items-center flex-col"
-          onClick={() => handleRingToAnotherUser()}
+          onClick={() => handleRingToAnotherUser(1)}
         >
           <BellIcon
             primaryColor={"#FFE357"}

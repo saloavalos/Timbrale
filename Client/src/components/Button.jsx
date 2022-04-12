@@ -1,14 +1,29 @@
-import React from "react";
-
-const Button = ({ text, onClick }) => {
+export const Button = ({ text, onClick, type }) => {
   return (
     <a
       onClick={onClick}
-      className="flex justify-center py-2 px-4 bg-secondary border-[1.5px] border-primary rounded-md font-semibold text-xl md:hover:bg-purpleDark active:bg-purpleDark transition-all"
+      className={
+        "flex justify-center py-2 px-4 bg-secondary border-[1.5px] border-primary rounded-md font-semibold text-xl md:hover:bg-purpleDark active:bg-purpleDark transition-all"
+      }
     >
       {text}
     </a>
   );
 };
+export const ButtonRinging = ({ text, onClick, primaryColor }) => {
+  const tagStyle = {
+    backgroundColor: primaryColor,
+  };
 
-export default Button;
+  return (
+    <a
+      onClick={onClick}
+      style={tagStyle}
+      className={
+        "flex justify-center py-2 px-4 bg-transparent rounded-md font-semibold text-xl md:hover:opacity-80 active:opacity-80 transition-all"
+      }
+    >
+      {text}
+    </a>
+  );
+};

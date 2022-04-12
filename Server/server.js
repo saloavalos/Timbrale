@@ -93,6 +93,10 @@ io.on("connection", (socket) => {
     });
   });
 
+  socket.on("ringSeen", ({ sender }) => {
+    console.log("ring from -" + sender + "- seen by: " + socket.id);
+  });
+
   socket.on("disconnect", () => {
     console.log(`Socketd.id : ${socket.id} left`);
     removeUserFromOnlineUsers(socket.id);

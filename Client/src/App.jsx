@@ -111,12 +111,6 @@ function App() {
 
   return (
     <div>
-      {
-        // Notifications from other online user calling to you
-        isRinging && (
-          <PopupRing ringSender={ringSender} ringPriority={ringPriority} />
-        )
-      }
       <MainContext.Provider
         value={{
           socket,
@@ -129,6 +123,16 @@ function App() {
           setUser,
         }}
       >
+        {
+          // Notifications from other online user calling to you
+          isRinging && (
+            <PopupRing
+              ringSender={ringSender}
+              ringPriority={ringPriority}
+              setIsRinging={setIsRinging}
+            />
+          )
+        }
         <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
         <div className="px-4 flex justify-center mt-6">
           {hasProblemsConnectingToServer ? (
