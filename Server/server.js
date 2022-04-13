@@ -93,8 +93,8 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("ringSeen", ({ sender, receiver }) => {
-    console.log("ring from -" + sender + "- seen by: " + socket.id);
+  socket.on("ringingSeen", ({ sender, receiver }) => {
+    console.log("ring from - " + sender + " - seen by: " + socket.id);
 
     // Get Sockets id from the sender/receiver
     const senderAndReceiverSocketsId = [];
@@ -110,6 +110,26 @@ io.on("connection", (socket) => {
     senderAndReceiverSocketsId?.map((eachSocketId) => {
       // Notify sender/reciver that ring was seen
       io.to(eachSocketId).emit("rinSeen", { sender, receiver });
+    });
+  });
+
+  socket.on("cancelRinging", ({ sender, receiver }) => {
+    console.log("Ring from - " + sender + " - canceled");
+
+    // Get Sockets id from the sender/receiver
+    const senderAndReceiverSocketsId = [];
+    onlineUsers.map((user) => {
+      if (user.username === sender || user.username === receiver) {
+        user.socketID.filter((eachSocketId) =>
+          senderAndReceiverSocketsId.push(eachSocketId)
+        );
+      }
+    });
+
+    // notify to a range of socket ids with the same username of sender/receiver because maybe the sender/receiver have multiple sessions open
+    senderAndReceiverSocketsId?.map((eachSocketId) => {
+      // Notify sender/reciver that ring was seen
+      io.to(eachSocketId).emit("ringCanceled");
     });
   });
 

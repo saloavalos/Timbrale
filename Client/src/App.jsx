@@ -111,6 +111,10 @@ function App() {
     socket?.on("rinSeen", ({ sender, receiver }) => {
       setIsRinging(false);
     });
+
+    socket?.on("ringCanceled", () => {
+      setIsRinging(false);
+    });
   }, [socket]);
 
   return (

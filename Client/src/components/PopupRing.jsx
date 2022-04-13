@@ -39,8 +39,8 @@ const PopupRing = ({ ringSender, ringPriority, setIsRinging }) => {
     // but for developing is easier to see changes without refreshing
   }, [ringPriority]);
 
-  const handleRingSeen = () => {
-    socket?.emit("ringSeen", { sender: ringSender, receiver: user });
+  const handleRingingSeen = () => {
+    socket?.emit("ringingSeen", { sender: ringSender, receiver: user });
     setIsRinging(false);
   };
 
@@ -48,7 +48,7 @@ const PopupRing = ({ ringSender, ringPriority, setIsRinging }) => {
   }
   return (
     <div className="bg-header/[.60] w-full h-screen fixed z-40">
-      <div className="bg-white z-40 fixed top-[50%] left-[50%] translate-y-[-50%] translate-x-[-50%] rounded-md max-w-xs px-6 pt-8 pb-10 text-center h-fit w-full">
+      <div className="bg-white z-40 fixed top-[50%] left-[50%] translate-y-[-50%] translate-x-[-50%] rounded-md max-w-[19rem] px-6 pt-8 pb-10 text-center h-fit w-full">
         <div>
           <p className="font-semibold text-3xl mb-2">Timbrando</p>
           <span className="text-2xl text-paragraph">{ringSender}</span>
@@ -62,7 +62,7 @@ const PopupRing = ({ ringSender, ringPriority, setIsRinging }) => {
         </div>
         <ButtonRinging
           text={"Entendido"}
-          onClick={handleRingSeen}
+          onClick={handleRingingSeen}
           primaryColor={primaryColor}
         />
         <p className="mt-4 underline text-base">

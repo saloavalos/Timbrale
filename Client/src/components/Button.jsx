@@ -15,6 +15,7 @@ export default Button;
 export const ButtonRinging = ({ text, onClick, primaryColor }) => {
   const tagStyle = {
     backgroundColor: primaryColor,
+    borderColor: primaryColor,
   };
 
   return (
@@ -22,7 +23,7 @@ export const ButtonRinging = ({ text, onClick, primaryColor }) => {
       onClick={onClick}
       style={tagStyle}
       className={
-        "flex justify-center py-2 px-4 bg-transparent rounded-md font-semibold text-xl md:hover:opacity-80 active:opacity-80 transition-all"
+        "flex justify-center border py-2 px-4 bg-transparent rounded-md font-semibold text-xl md:hover:opacity-80 active:opacity-80 transition-all"
       }
     >
       {text}

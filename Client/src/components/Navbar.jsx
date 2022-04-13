@@ -50,7 +50,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
           <ul
             className={`${
               isProfileMenuActive ? "visible" : "hidden"
-            } absolute w-max mt-2 shadow-md rounded-md right-0 py-4 px-6 text-left bg-white space-y-3 `}
+            } absolute w-max mt-2 shadow-md rounded-md right-0 pt-4 pb-[1.1rem] px-6 text-left bg-white space-y-3 `}
           >
             <li className="text-primary font-semibold text-xl cursor-pointer">
               {currentUserData.username}
