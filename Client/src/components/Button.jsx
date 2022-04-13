@@ -10,6 +10,8 @@ export const Button = ({ text, onClick, type }) => {
     </a>
   );
 };
+export default Button;
+
 export const ButtonRinging = ({ text, onClick, primaryColor }) => {
   const tagStyle = {
     backgroundColor: primaryColor,

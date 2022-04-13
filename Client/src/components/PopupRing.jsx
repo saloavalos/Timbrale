@@ -11,7 +11,7 @@ const PopupRing = ({ ringSender, ringPriority, setIsRinging }) => {
   const [primaryColor, setPrimaryColor] = useState("");
   const [secondaryColor, setSecondaryColor] = useState("");
   // Context values
-  const { socket } = useContext(MainContext);
+  const { socket, user } = useContext(MainContext);
 
   useEffect(() => {
     // Ring to all online users
@@ -40,18 +40,20 @@ const PopupRing = ({ ringSender, ringPriority, setIsRinging }) => {
   }, [ringPriority]);
 
   const handleRingSeen = () => {
-    socket?.emit("ringSeen", { sender: ringSender });
+    socket?.emit("ringSeen", { sender: ringSender, receiver: user });
     setIsRinging(false);
   };
 
+  {
+  }
   return (
-    <div className="bg-header/[.60] w-full h-screen fixed p-8 z-40 flex items-center">
-      <div className="bg-white rounded-md px-6 pt-8 pb-10 text-center h-fit w-full">
-        <div className="mb-8">
+    <div className="bg-header/[.60] w-full h-screen fixed z-40">
+      <div className="bg-white z-40 fixed top-[50%] left-[50%] translate-y-[-50%] translate-x-[-50%] rounded-md max-w-xs px-6 pt-8 pb-10 text-center h-fit w-full">
+        <div>
           <p className="font-semibold text-3xl mb-2">Timbrando</p>
           <span className="text-2xl text-paragraph">{ringSender}</span>
         </div>
-        <div className="min-h-[10rem] flex justify-center mb-6">
+        <div className="min-h-[10rem] flex justify-center mb-4 mt-6">
           <BellIcon
             primaryColor={primaryColor}
             secondaryColor={secondaryColor}
@@ -63,7 +65,9 @@ const PopupRing = ({ ringSender, ringPriority, setIsRinging }) => {
           onClick={handleRingSeen}
           primaryColor={primaryColor}
         />
-        <p className="mt-4 underline">Mandar respuesta personalizada</p>
+        <p className="mt-4 underline text-base">
+          Mandar respuesta personalizada
+        </p>
       </div>
     </div>
   );

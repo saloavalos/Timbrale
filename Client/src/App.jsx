@@ -107,6 +107,10 @@ function App() {
       setIsRinging(true);
       console.log("Ring received from : " + sender);
     });
+
+    socket?.on("rinSeen", ({ sender, receiver }) => {
+      setIsRinging(false);
+    });
   }, [socket]);
 
   return (

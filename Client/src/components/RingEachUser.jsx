@@ -39,9 +39,9 @@ const RingEachUser = ({ eachUserData }) => {
         </div>
       </div>
 
-      <div className="flex justify-center space-x-6 mt-4">
+      <div className="flex justify-center space-x-6 mt-4 children:">
         <div
-          className="flex items-center flex-col"
+          className="flex items-center flex-col hover:cursor-pointer"
           onClick={() => handleRingToAnotherUser(1)}
         >
           <BellIcon
@@ -52,7 +52,7 @@ const RingEachUser = ({ eachUserData }) => {
           <span>Normal</span>
         </div>
         <div
-          className="flex items-center flex-col"
+          className="flex items-center flex-col hover:cursor-pointer"
           onClick={() => handleRingToAnotherUser(2)}
         >
           <BellIcon
