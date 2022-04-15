@@ -31,7 +31,7 @@ const removeUserFromOnlineUsers = (id) => {
     ? (onlineUsers = onlineUsers.filter(
         (user) => !user.socketID.find((eachSocketId) => eachSocketId === id)
       ))
-    : // If the user has mora than 1 socket id we just delete the indicated socket id
+    : // If the user has more than 1 socket id we just delete the indicated socket id
       onlineUsers.map((user) => {
         user.socketID = user.socketID.filter(
           (eachSocketId) => eachSocketId !== id
@@ -57,16 +57,16 @@ io.on("connection", (socket) => {
       console.log("Users connected: " + io.of("/").sockets.size);
 
       addNewUserToOnlineUsers(username, socket.id);
-      // const receiver = getOnlineUserData(username);
+      const dataFromUser = getUserData(username);
       io.to(socket.id).emit("loginResponse", {
         loginStatus: true,
-        userData: getUserData(username),
+        userData: dataFromUser,
       });
       console.log(
         "Arreglo de usuarios en linea:" + JSON.stringify(onlineUsers)
       );
       // Notify all users how many users are online and pass their data
-      io.emit("onlineUsers", onlineUsers);
+      io.emit("updateOnlineUsers", onlineUsers);
     } else {
       console.log("Usuario no encontrado");
       io.to(socket.id).emit("loginResponse", {
@@ -133,11 +133,30 @@ io.on("connection", (socket) => {
     });
   });
 
+  socket.on("logoutAllSessions", ({ username }) => {
+    console.log("Closing all opened sessions of: " + username);
+    // Get Sockets id from the user
+    const userSocketsId = [];
+    onlineUsers.map((user) => {
+      if (user.username === username) {
+        user.socketID.filter((eachSocketId) =>
+          userSocketsId.push(eachSocketId)
+        );
+      }
+    });
+
+    // notify to a range of socket ids with the same username of sender/receiver because maybe the sender/receiver have multiple sessions open
+    userSocketsId?.map((eachSocketId) => {
+      // Notify sender/reciver that ring was seen
+      io.to(eachSocketId).emit("loggedOutFromAllSessions");
+    });
+  });
+
   socket.on("disconnect", () => {
     console.log(`Socketd.id : ${socket.id} left`);
     removeUserFromOnlineUsers(socket.id);
     // Notify all users how many users are online and pass their data
-    io.emit("onlineUsers", onlineUsers);
+    io.emit("updateOnlineUsers", onlineUsers);
     console.log("Online users: " + JSON.stringify(onlineUsers));
   });
 });

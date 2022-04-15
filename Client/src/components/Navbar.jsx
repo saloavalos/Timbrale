@@ -1,10 +1,11 @@
-import { useState, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import userProfilePhoto from "/src/assets/user-profile.png";
 // Context
 import { MainContext } from "../contexts/MainContext";
 
-const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
+const Navbar = ({ isLoggedIn, setIsLoggedIn, onlineUsers }) => {
   const [isProfileMenuActive, setIsProfileMenuActive] = useState(false);
+  const [currentUserActiveSessions, setCurrentUserActiveSessions] = useState(0);
 
   // Context values
   const { socket, currentUserData, setIsLoginIn, setUser } =
@@ -16,13 +17,32 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
     setIsProfileMenuActive(false);
     // It notifies all online user that this user left
     socket.disconnect();
-    // Clear user state, so that when login component is mounted
-    // it doesn't tries to use user to log in
-    setUser("");
-    // This stop the animation on login (animation when you click log in)
-    setIsLoginIn(false);
-    setIsLoggedIn(false);
   };
+
+  const handleLogoutAllSessions = () => {
+    setIsProfileMenuActive(false);
+    socket?.emit("logoutAllSessions", { username: currentUserData.username });
+  };
+
+  useEffect(() => {
+    if (onlineUsers) {
+      onlineUsers.map((eachUser) => {
+        if (eachUser.username === currentUserData.username) {
+          console.log("llegaaaaa aqui");
+          setCurrentUserActiveSessions(eachUser.socketID.length);
+        }
+      });
+    }
+    console.log("currentUserActiveSessions: " + currentUserActiveSessions);
+  }, [onlineUsers]);
+
+  useEffect(() => {
+    // When the user closes all opened sessions and "profile menu" is visible
+    // in any opened session it should be hide automatically
+    if (!socket) {
+      setIsProfileMenuActive(false);
+    }
+  }, [socket]);
 
   return (
     <nav className="sticky top-0 z-30 bg-white">
@@ -64,12 +84,14 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
             >
               Cerrar sesión
             </li>
-            <li
-              className="font-regular text-lg cursor-pointer"
-              onClick={handleLogout}
-            >
-              Cerrar todas las sesiones
-            </li>
+            {currentUserActiveSessions > 1 && (
+              <li
+                className="font-regular text-lg cursor-pointer"
+                onClick={handleLogoutAllSessions}
+              >
+                Cerrar todas las sesiones
+              </li>
+            )}
           </ul>
         </div>
       </div>

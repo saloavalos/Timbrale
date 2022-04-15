@@ -16,7 +16,7 @@ function App() {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [errorLoginIn, setErrorLoginIn] = useState("");
   const [isLoginIn, setIsLoginIn] = useState(true);
-  // To use access to current user data in child compnents
+  // To use access to current user data in child components
   const [currentUserData, setCurrentUserData] = useState({});
   const [hasProblemsConnectingToServer, setHasProblemsConnectingToServer] =
     useState(false);
@@ -38,8 +38,17 @@ function App() {
       console.log("Se crea una nueva conexion socket");
     }
 
+    socket?.on("loggedOutFromAllSessions", () => {
+      // Clear username stored in localStorage
+      localStorage.removeItem("username");
+      socket.disconnect();
+    });
+
     // If server restarts or something similar
     socket?.on("disconnect", () => {
+      // Clear user state, so that when login component is mounted
+      // it doesn't tries to use user to log in
+      setUser("");
       // To redirect to login and if needed login automatically
       // bc maybe user is logged out, or for example maybe the server was restarted or closed
       setIsLoggedIn(false);
@@ -48,7 +57,7 @@ function App() {
       setIsLoginIn(true);
       console.log("Disconnected from server");
 
-      // Try to reset socket manully
+      // Try to reset socket manually
       setSocket(null);
     });
 
@@ -78,8 +87,17 @@ function App() {
       }
     });
 
-    socket?.on("onlineUsers", (data) => {
-      setOnlineUsers(data);
+    socket?.on("updateOnlineUsers", (onlineUsersData) => {
+      setOnlineUsers(onlineUsersData);
+      console.log("onlineUsers data: " + JSON.stringify(onlineUsersData));
+
+      // data.find((user) => {
+      //   if (user.username === username) {
+      //     user.socketID.filter((eachSocketId) =>
+      //       currentUserActiveSessions.push(eachSocketId)
+      //     );
+      //   }
+      // });
     });
 
     // when it connects to the server
@@ -141,7 +159,11 @@ function App() {
             />
           )
         }
-        <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+        <Navbar
+          isLoggedIn={isLoggedIn}
+          setIsLoggedIn={setIsLoggedIn}
+          onlineUsers={onlineUsers}
+        />
         <div className="px-4 flex justify-center mt-6">
           {hasProblemsConnectingToServer ? (
             <div className="flex flex-col justify-center items-center h-[75vh]">

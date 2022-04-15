@@ -10,14 +10,12 @@ import { MainContext } from "../contexts/MainContext";
 const Dashboard = ({ onlineUsers }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingOtherContent, setIsLoadingOtherContent] = useState(true);
-  const [onlineUsersData, setOnlineUsersData] = useState([]);
 
   // Context values
   const { currentUserData } = useContext(MainContext);
 
   useEffect(() => {
     if (onlineUsers) {
-      setOnlineUsersData(onlineUsers);
       setIsLoading(false);
     }
   }, [onlineUsers]);
@@ -38,7 +36,7 @@ const Dashboard = ({ onlineUsers }) => {
     <div className="flex justify-center items-center h-[65vh]">
       <SyncLoader loading={isLoading} size={12} color={"#8357ff"} />
     </div>
-  ) : onlineUsersData.length === 1 ? (
+  ) : onlineUsers.length === 1 ? (
     // If the current user that is logged in, is the only user online
     <div>
       <img
@@ -55,7 +53,7 @@ const Dashboard = ({ onlineUsers }) => {
     <div>
       <p className="mb-2 font-regular text-lg text-header text-center">
         Usuarios en linea (
-        <span className="text-paragraph">{onlineUsersData.length - 1}</span>)
+        <span className="text-paragraph">{onlineUsers.length - 1}</span>)
       </p>
       <div className="cursor-pointer relative bg-white flex items-center justify-center border border-header rounded-md py-1.5 px-3 before:absolute before:top-2 before:left-2 before:w-full before:h-full before:border before:border-primary before:rounded-md before:-z-10">
         <p className="mr-2 text-2xl font-semibold">Timbrarle a todos</p>
@@ -64,7 +62,7 @@ const Dashboard = ({ onlineUsers }) => {
 
       {
         // Render one component per user but me (the current user)
-        onlineUsersData.map(
+        onlineUsers.map(
           (eachUserData, index) =>
             eachUserData.username !== currentUserData.username && (
               <RingEachUser key={index} eachUserData={eachUserData} />
