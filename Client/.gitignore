@@ -27,3 +27,7 @@ dist-ssr
 # If I used gh-pages I shouldn't ignore /build,
 # but in this project for now I don't need it
 /build
+
+# Credentials that shouldn't be share
+.env
+/.ssl-cert

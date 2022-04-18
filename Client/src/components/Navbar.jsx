@@ -3,7 +3,7 @@ import userProfilePhoto from "/src/assets/user-profile.png";
 // Context
 import { MainContext } from "../contexts/MainContext";
 
-const Navbar = ({ isLoggedIn, setIsLoggedIn, onlineUsers }) => {
+const Navbar = ({ isLoggedIn, setIsLoggedIn, onlineUsers, isSupported }) => {
   const [isProfileMenuActive, setIsProfileMenuActive] = useState(false);
   const [currentUserActiveSessions, setCurrentUserActiveSessions] = useState(0);
 
@@ -28,7 +28,6 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, onlineUsers }) => {
     if (onlineUsers) {
       onlineUsers.map((eachUser) => {
         if (eachUser.username === currentUserData.username) {
-          console.log("llegaaaaa aqui");
           setCurrentUserActiveSessions(eachUser.socketID.length);
         }
       });
@@ -90,6 +89,15 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, onlineUsers }) => {
                 onClick={handleLogoutAllSessions}
               >
                 Cerrar todas las sesiones
+              </li>
+            )}
+            {isSupported && (
+              <li
+                className="font-regular text-lg cursor-pointer flex items-center"
+                onClick={handleLogoutAllSessions}
+              >
+                Permitir pantalla activa{" "}
+                <div className="ml-2 rounded-full h-5 w-5 bg-paragraph"></div>
               </li>
             )}
           </ul>

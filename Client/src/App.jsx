@@ -33,7 +33,7 @@ function App() {
     // To avoid have multiple socket connnections on same tab of browser
     if (!socket) {
       // I use this url instead of localhost because doing it this way I can access from any device on same network
-      setSocket(io("http://192.168.100.150:1010"));
+      setSocket(io("https://192.168.100.150:1010"));
       // const socket = io("http://localhost:1010");
       console.log("Se crea una nueva conexion socket");
     }
@@ -90,14 +90,6 @@ function App() {
     socket?.on("updateOnlineUsers", (onlineUsersData) => {
       setOnlineUsers(onlineUsersData);
       console.log("onlineUsers data: " + JSON.stringify(onlineUsersData));
-
-      // data.find((user) => {
-      //   if (user.username === username) {
-      //     user.socketID.filter((eachSocketId) =>
-      //       currentUserActiveSessions.push(eachSocketId)
-      //     );
-      //   }
-      // });
     });
 
     // when it connects to the server

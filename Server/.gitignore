@@ -1,1 +1,4 @@
 node_modules
+
+# Credentials that shouldn't be share
+.ssl-certificate

@@ -1,7 +1,15 @@
+import { createServer } from "https";
 import { Server } from "socket.io";
 import users from "./users.js";
+import fs from "fs";
 
-const io = new Server({
+// ssl-cert was generated using mkcert
+const httpServer = createServer({
+  key: fs.readFileSync("./.ssl-certificate/key.pem"),
+  cert: fs.readFileSync("./.ssl-certificate/cert.pem"),
+});
+
+const io = new Server(httpServer, {
   cors: {
     origin: "*", // to allow any ip address on same network to connect to the server
     // origin: "http://localhost:3000",
@@ -161,4 +169,4 @@ io.on("connection", (socket) => {
   });
 });
 
-io.listen(1010);
+httpServer.listen(1010);
