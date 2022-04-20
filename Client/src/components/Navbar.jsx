@@ -3,13 +3,12 @@ import userProfilePhoto from "/src/assets/user-profile.png";
 // Context
 import { MainContext } from "../contexts/MainContext";
 
-const Navbar = ({ isLoggedIn, setIsLoggedIn, onlineUsers, isSupported }) => {
+const Navbar = ({ isLoggedIn, setIsLoggedIn, onlineUsers }) => {
   const [isProfileMenuActive, setIsProfileMenuActive] = useState(false);
   const [currentUserActiveSessions, setCurrentUserActiveSessions] = useState(0);
 
   // Context values
-  const { socket, currentUserData, setIsLoginIn, setUser } =
-    useContext(MainContext);
+  const { socket, currentUserData } = useContext(MainContext);
 
   const handleLogout = () => {
     // Clear username stored in localStorage
@@ -89,15 +88,6 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, onlineUsers, isSupported }) => {
                 onClick={handleLogoutAllSessions}
               >
                 Cerrar todas las sesiones
-              </li>
-            )}
-            {isSupported && (
-              <li
-                className="font-regular text-lg cursor-pointer flex items-center"
-                onClick={handleLogoutAllSessions}
-              >
-                Permitir pantalla activa{" "}
-                <div className="ml-2 rounded-full h-5 w-5 bg-paragraph"></div>
               </li>
             )}
           </ul>

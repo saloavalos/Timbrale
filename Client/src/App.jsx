@@ -15,8 +15,10 @@ function App() {
   const [socket, setSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [errorLoginIn, setErrorLoginIn] = useState("");
-  const [isLoginIn, setIsLoginIn] = useState(true);
-  // To use access to current user data in child components
+  const [isLoginInAutomatically, setIsLoginInAutomatically] = useState(true);
+  const [isLoginInManually, setIsLoginInManually] = useState(false);
+
+  // To access to current user data in child components
   const [currentUserData, setCurrentUserData] = useState({});
   const [hasProblemsConnectingToServer, setHasProblemsConnectingToServer] =
     useState(false);
@@ -26,6 +28,14 @@ function App() {
   const [isRinging, setIsRinging] = useState(false);
   const [ringSender, setRingSender] = useState("");
   const [ringPriority, setRingPriority] = useState(0);
+  // used in Dashboard to know which users we are ringing to
+  const [ringReceivers, setRingReceivers] = useState([]);
+
+  useEffect(() => {
+    console.log(
+      "se actualiza el currentUserData: " + JSON.stringify(currentUserData)
+    );
+  }, [currentUserData]);
 
   // If the server/socket has some changes we check them with .on
   // as long as "socket state" is not null
@@ -33,7 +43,7 @@ function App() {
     // To avoid have multiple socket connnections on same tab of browser
     if (!socket) {
       // I use this url instead of localhost because doing it this way I can access from any device on same network
-      setSocket(io("https://192.168.100.150:1010"));
+      setSocket(io("http://192.168.100.150:1010"));
       // const socket = io("http://localhost:1010");
       console.log("Se crea una nueva conexion socket");
     }
@@ -54,7 +64,7 @@ function App() {
       setIsLoggedIn(false);
       // Maybe was it was disconnect bc of a server restart so,
       // we start the loading animation for the login process, but this animation covers the whole page
-      setIsLoginIn(true);
+      setIsLoginInAutomatically(true);
       console.log("Disconnected from server");
 
       // Try to reset socket manually
@@ -79,10 +89,11 @@ function App() {
         setTimeout(() => {
           // With this delay it stays in the login, showing in whole page loading animation
           setIsLoggedIn(loginStatus);
-          setIsLoginIn(false);
+          setIsLoginInAutomatically(false);
+          setIsLoginInManually(false);
         }, 1000);
       } else {
-        setIsLoginIn(false);
+        setIsLoginInAutomatically(false);
         setErrorLoginIn("*Usuario no encontrado");
       }
     });
@@ -104,41 +115,65 @@ function App() {
         // To redirect to login and if needed login automatically
         setIsLoggedIn(false);
         // Maybe there was a hot refresh so,
-        // we start the loading animation for the login process, but this animation covers the whole page
-        setIsLoginIn(true);
+        // we start the loading animation for the login process while it tries to automatically login the user, (this animation covers the whole page)
+        setIsLoginInAutomatically(true);
       } else {
-        setIsLoginIn(false);
+        setIsLoginInAutomatically(false);
       }
     });
 
+    // When someone is ringing you
     socket?.on("rinReceived", ({ sender, priority }) => {
       setRingSender(sender);
       setRingPriority(priority);
       setIsRinging(true);
       console.log("Ring received from : " + sender);
     });
-
-    socket?.on("rinSeen", ({ sender, receiver }) => {
-      setIsRinging(false);
-    });
-
-    socket?.on("ringCanceled", () => {
-      setIsRinging(false);
-    });
   }, [socket]);
+
+  useEffect(() => {
+    socket?.on("ringSeen", ({ receiver }) => {
+      // Either is the sender or receiver of the ring
+      // Hide the ring popup in receiver
+      setIsRinging(false);
+      // Remove ringReceiver from array, loop and save receiver that are not the current receiver
+      console.log("receiver: " + receiver);
+      setRingReceivers(
+        ringReceivers.filter(
+          (eachRingReceiver) => eachRingReceiver !== receiver
+        )
+      );
+    });
+
+    socket?.on("ringCanceled", ({ receiver }) => {
+      // Hide the ring popup in receiver
+      setIsRinging(false);
+      // Remove ringReceiver from array, loop and save receiver that are not the current receiver
+      setRingReceivers(
+        ringReceivers.filter(
+          (eachRingReceiver) => eachRingReceiver !== receiver
+        )
+      );
+    });
+
+    return () => {
+      socket?.off("ringSeen");
+      socket?.off("ringCanceled");
+    };
+  }, [ringReceivers, isRinging]);
 
   return (
     <div>
       <MainContext.Provider
         value={{
           socket,
-          isLoginIn,
-          setIsLoginIn,
           errorLoginIn,
           setErrorLoginIn,
           currentUserData,
           user,
           setUser,
+          ringReceivers,
+          setRingReceivers,
         }}
       >
         {
@@ -156,14 +191,18 @@ function App() {
           setIsLoggedIn={setIsLoggedIn}
           onlineUsers={onlineUsers}
         />
-        <div className="px-4 flex justify-center mt-6">
+        <div className="px-4 flex justify-center mt-4 mb-8">
           {hasProblemsConnectingToServer ? (
             <div className="flex flex-col justify-center items-center h-[75vh]">
               <p>Imposible conectarse al servidor.</p>{" "}
               <p>Sigue intentando o intenta más tarde</p>{" "}
             </div>
           ) : !isLoggedIn ? (
-            <Login />
+            <Login
+              isLoginInAutomatically={isLoginInAutomatically}
+              isLoginInManually={isLoginInManually}
+              setIsLoginInManually={setIsLoginInManually}
+            />
           ) : (
             <Dashboard onlineUsers={onlineUsers} />
           )}

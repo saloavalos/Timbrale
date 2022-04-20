@@ -30,4 +30,3 @@ dist-ssr
 
 # Credentials that shouldn't be share
 .env
-/.ssl-cert

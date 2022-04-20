@@ -42,6 +42,10 @@ const PopupRing = ({ ringSender, ringPriority, setIsRinging }) => {
   const handleRingingSeen = () => {
     socket?.emit("ringingSeen", { sender: ringSender, receiver: user });
     setIsRinging(false);
+    console.log(
+      "%chandleRingingSeen: " + user,
+      "font-size: 20px; background: blue;"
+    );
   };
 
   {

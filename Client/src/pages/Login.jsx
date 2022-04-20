@@ -1,22 +1,22 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import Button from "../components/Button";
 // Spinner
 import SyncLoader from "react-spinners/SyncLoader";
 // Context
 import { MainContext } from "../contexts/MainContext";
 
-const login = () => {
+const login = ({
+  isLoginInAutomatically,
+  isLoginInManually,
+  setIsLoginInManually,
+}) => {
   const [username, setUsername] = useState("");
   // Context values
-  const {
-    socket,
-    isLoginIn,
-    setIsLoginIn,
-    errorLoginIn,
-    setErrorLoginIn,
-    user,
-    setUser,
-  } = useContext(MainContext);
+  const { socket, errorLoginIn, setErrorLoginIn, user, setUser } =
+    useContext(MainContext);
+
+  // Used to remove focus on input
+  const inputRef = useRef();
 
   const handleLogin = () => {
     if (!username) {
@@ -27,10 +27,13 @@ const login = () => {
       return;
     }
 
+    // Remove input focus
+    inputRef.current.blur();
+
     // clean any error ocured in client validation
     setErrorLoginIn("");
     // Start loading animation for the login process
-    setIsLoginIn(true);
+    setIsLoginInManually(true);
 
     // I do not need a loading animation because the login is so quick
     // but I wanted implement it
@@ -59,12 +62,15 @@ const login = () => {
   };
 
   return (
-    // If there is a username stored in locaStoarge we have to try to login automatically,
+    // If there is an username stored in locaStoarge we have to try to login automatically,
     // so we show a loading animation while the login process is done
-    // isLoginIn && localStorage.getItem("username") !== null ? (
-    isLoginIn ? (
+    isLoginInAutomatically ? (
       <div className="flex justify-center items-center h-[65vh]">
-        <SyncLoader loading={isLoginIn} size={12} color={"#8357ff"} />
+        <SyncLoader
+          loading={isLoginInAutomatically}
+          size={12}
+          color={"#8357ff"}
+        />
       </div>
     ) : (
       // If there is no username stored in localStorage or
@@ -83,15 +89,23 @@ const login = () => {
             }`}
             onChange={(e) => setUsername(e.target.value)}
             onKeyPress={handleEnterLogIn}
+            ref={inputRef}
           />
           {errorLoginIn && <p className="text-redPrimary">{errorLoginIn}</p>}
         </div>
         <Button text={"Iniciar sesión"} onClick={handleLogin} />
-        {isLoginIn && (
-          <div className="flex justify-center mt-8">
-            <SyncLoader loading={isLoginIn} size={12} color={"#8357ff"} />
-          </div>
-        )}
+        {
+          // When
+          isLoginInManually && (
+            <div className="flex justify-center mt-8">
+              <SyncLoader
+                loading={isLoginInManually}
+                size={12}
+                color={"#8357ff"}
+              />
+            </div>
+          )
+        }
       </div>
     )
   );

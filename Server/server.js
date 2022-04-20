@@ -1,18 +1,9 @@
-import { createServer } from "https";
 import { Server } from "socket.io";
 import users from "./users.js";
-import fs from "fs";
 
-// ssl-cert was generated using mkcert
-const httpServer = createServer({
-  key: fs.readFileSync("./.ssl-certificate/key.pem"),
-  cert: fs.readFileSync("./.ssl-certificate/cert.pem"),
-});
-
-const io = new Server(httpServer, {
+const io = new Server({
   cors: {
-    origin: "*", // to allow any ip address on same network to connect to the server
-    // origin: "http://localhost:3000",
+    origin: ["http://192.168.100.150:1414", "http://localhost:1414"], // allowed ip address of client to connect to the server
   },
 });
 
@@ -83,6 +74,7 @@ io.on("connection", (socket) => {
     }
   });
 
+  // Notify to an user he is receiving a ringing
   socket.on("ringToUser", ({ sender, receiver, priority }) => {
     // Get Sockets id from the receiver
     const receiverSocketsId = [];
@@ -93,8 +85,11 @@ io.on("connection", (socket) => {
         );
     });
 
-    console.log("sockets del receiver : " + receiverSocketsId);
-    // notify to a range of socket ids with the same username of receiver because maybe the reciver has multiple sessions open
+    console.log(
+      "----sockets from receiver who is getting a ringing popuup : " +
+        receiverSocketsId
+    );
+    // notify to a range of socket ids with the same username of receiver because maybe the receiver has multiple sessions open
     receiverSocketsId?.map((eachSocketIdFromReceiver) => {
       // send notification to receiver
       io.to(eachSocketIdFromReceiver).emit("rinReceived", { sender, priority });
@@ -102,7 +97,14 @@ io.on("connection", (socket) => {
   });
 
   socket.on("ringingSeen", ({ sender, receiver }) => {
-    console.log("ring from - " + sender + " - seen by: " + socket.id);
+    console.log(
+      "ring from - " +
+        sender +
+        " - seen by: " +
+        socket.id +
+        " alias: " +
+        receiver
+    );
 
     // Get Sockets id from the sender/receiver
     const senderAndReceiverSocketsId = [];
@@ -117,7 +119,7 @@ io.on("connection", (socket) => {
     // notify to a range of socket ids with the same username of sender/receiver because maybe the sender/receiver have multiple sessions open
     senderAndReceiverSocketsId?.map((eachSocketId) => {
       // Notify sender/reciver that ring was seen
-      io.to(eachSocketId).emit("rinSeen", { sender, receiver });
+      io.to(eachSocketId).emit("ringSeen", { receiver });
     });
   });
 
@@ -136,8 +138,8 @@ io.on("connection", (socket) => {
 
     // notify to a range of socket ids with the same username of sender/receiver because maybe the sender/receiver have multiple sessions open
     senderAndReceiverSocketsId?.map((eachSocketId) => {
-      // Notify sender/reciver that ring was seen
-      io.to(eachSocketId).emit("ringCanceled");
+      // Notify sender/receiver that ring was seen
+      io.to(eachSocketId).emit("ringCanceled", { receiver });
     });
   });
 
@@ -169,4 +171,4 @@ io.on("connection", (socket) => {
   });
 });
 
-httpServer.listen(1010);
+io.listen(1010);

@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import BellIcon from "./BellIcon";
 import expandIcon from "../assets/expand-icon.svg";
 // Spinner
@@ -9,9 +9,9 @@ import Button from "./Button";
 
 const RingEachUser = ({ eachUserData }) => {
   const [ringIconSize, setringIconSize] = useState("55");
-  const [isSendingRing, setIsSendingRing] = useState(false);
   // Context values
-  const { socket, user } = useContext(MainContext);
+  const { socket, user, ringReceivers, setRingReceivers } =
+    useContext(MainContext);
 
   const handleRingToAnotherUser = (priority) => {
     socket?.emit("ringToUser", {
@@ -19,7 +19,8 @@ const RingEachUser = ({ eachUserData }) => {
       receiver: eachUserData.username,
       priority: priority,
     });
-    setIsSendingRing(true);
+    // Add new ringReceiver to array
+    setRingReceivers([...ringReceivers, eachUserData.username]);
   };
 
   const handleCancelRinging = () => {
@@ -27,7 +28,6 @@ const RingEachUser = ({ eachUserData }) => {
       sender: user,
       receiver: eachUserData.username,
     });
-    setIsSendingRing(false);
   };
 
   // Fix for MoonLoader spinner
@@ -35,9 +35,15 @@ const RingEachUser = ({ eachUserData }) => {
     display: flex;
   `;
 
+  useEffect(() => {
+    console.log(ringReceivers);
+  }, [ringReceivers]);
+
   return (
     <div className="mt-8 border rounded-md p-4">
-      {!isSendingRing ? (
+      {!ringReceivers.find(
+        (eachRingReceiver) => eachRingReceiver === eachUserData.username
+      ) ? (
         <>
           <div className="flex ">
             <div className="w-14 mr-3">
@@ -85,6 +91,7 @@ const RingEachUser = ({ eachUserData }) => {
           </div>
         </>
       ) : (
+        // show loading animation when we are sending a ring
         <div className="text-center">
           <span className=" text-xl">Timbrando a </span>
           <span className="text-paragraph text-xl font-semibold">
@@ -92,7 +99,9 @@ const RingEachUser = ({ eachUserData }) => {
           </span>
           <div className="mt-3 flex justify-center">
             <MoonLoader
-              loading={isSendingRing}
+              loading={ringReceivers.find(
+                (eachRingReceiver) => eachRingReceiver === eachUserData.username
+              )}
               size={38}
               color={"#8357ff"}
               speedMultiplier={0.75}
