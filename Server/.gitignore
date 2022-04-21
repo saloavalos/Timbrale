@@ -1,1 +1,8 @@
 node_modules
+
+# Credentials that shouldn't be share
+.env
+
+# I will use a personal databse which is users.js,
+# you can use users_example.js (rename it to users.js and that's it)
+users.js
