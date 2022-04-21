@@ -24,9 +24,9 @@ dist-ssr
 *.sw?
 
 
-# If I used gh-pages I shouldn't ignore /build,
+# If I used gh-pages I shouldn't ignore build,
 # but in this project for now I don't need it
-/build
+build/
 
 # Credentials that shouldn't be share
 .env

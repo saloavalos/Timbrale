@@ -94,6 +94,7 @@ function App() {
         }, 1000);
       } else {
         setIsLoginInAutomatically(false);
+        setIsLoginInManually(false);
         setErrorLoginIn("*Usuario no encontrado");
       }
     });
