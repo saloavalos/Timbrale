@@ -6,13 +6,14 @@ import SyncLoader from "react-spinners/SyncLoader";
 import { MainContext } from "../contexts/MainContext";
 
 const login = ({
+  user,
   isLoginInAutomatically,
   isLoginInManually,
   setIsLoginInManually,
 }) => {
   const [username, setUsername] = useState("");
   // Context values
-  const { socket, errorLoginIn, setErrorLoginIn, user, setUser } =
+  const { socket, errorLoginIn, setErrorLoginIn, setUser } =
     useContext(MainContext);
 
   // Used to remove focus on input

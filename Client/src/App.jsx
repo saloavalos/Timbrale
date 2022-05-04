@@ -9,11 +9,13 @@ import Login from "./pages/Login";
 // Context
 import { MainContext } from "./contexts/MainContext";
 import PopupRing from "./components/PopupRing";
+import PopupRingingToEveryone from "./components/PopupRingingToEveryone";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [socket, setSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
+  const [ringToEveryoneSeenBy, setRingToEveryoneSeenBy] = useState([]);
   const [errorLoginIn, setErrorLoginIn] = useState("");
   const [isLoginInAutomatically, setIsLoginInAutomatically] = useState(true);
   const [isLoginInManually, setIsLoginInManually] = useState(false);
@@ -30,12 +32,7 @@ function App() {
   const [ringPriority, setRingPriority] = useState(0);
   // used in Dashboard to know which users we are ringing to
   const [ringReceivers, setRingReceivers] = useState([]);
-
-  useEffect(() => {
-    console.log(
-      "se actualiza el currentUserData: " + JSON.stringify(currentUserData)
-    );
-  }, [currentUserData]);
+  const [isRingingToEveryone, setIsRingingToEveryone] = useState(false);
 
   // If the server/socket has some changes we check them with .on
   // as long as "socket state" is not null
@@ -45,7 +42,7 @@ function App() {
       // I use this url instead of localhost because doing it this way I can access from any device on same network
       setSocket(io("http://192.168.100.150:1010"));
       // const socket = io("http://localhost:1010");
-      console.log("Se crea una nueva conexion socket");
+      console.log("a new socket connection is created");
     }
 
     socket?.on("loggedOutFromAllSessions", () => {
@@ -81,7 +78,7 @@ function App() {
 
     socket?.on("loginResponse", ({ loginStatus, userData }) => {
       if (loginStatus) {
-        console.log("asignando username a localStorage");
+        console.log("assigning username to localStorage");
         setCurrentUserData(userData);
         localStorage.setItem("username", userData.username);
         // I do not need a loading animation because the process is so quick
@@ -104,6 +101,14 @@ function App() {
       console.log("onlineUsers data: " + JSON.stringify(onlineUsersData));
     });
 
+    socket?.on("updateRingToEveryoneSeenBy", (ringToEveryoneSeenBy) => {
+      setRingToEveryoneSeenBy(ringToEveryoneSeenBy);
+      console.log(
+        "----Users who have seen the ring to everyone: " +
+          JSON.stringify(ringToEveryoneSeenBy)
+      );
+    });
+
     // when it connects to the server
     socket?.on("connect", () => {
       console.log("Client - connected");
@@ -112,7 +117,6 @@ function App() {
         // we get username and pass it to the state, so that the useEffect automatically tries to log in the user again
         setUser(localStorage.getItem("username"));
 
-        console.log("en logon activa animation");
         // To redirect to login and if needed login automatically
         setIsLoggedIn(false);
         // Maybe there was a hot refresh so,
@@ -122,22 +126,40 @@ function App() {
         setIsLoginInAutomatically(false);
       }
     });
-
-    // When someone is ringing you
-    socket?.on("rinReceived", ({ sender, priority }) => {
-      setRingSender(sender);
-      setRingPriority(priority);
-      setIsRinging(true);
-      console.log("Ring received from : " + sender);
-    });
   }, [socket]);
 
   useEffect(() => {
-    socket?.on("ringSeen", ({ receiver }) => {
-      // Either is the sender or receiver of the ring
-      // Hide the ring popup in receiver
+    // To avoid run on first render
+    if (isRingingToEveryone) {
+      // If all the users to whom the ring was sent saw it
+      if (ringToEveryoneSeenBy.length === onlineUsers.length - 1) {
+        // Hide the individual rings popup in all receivers
+        alert(ringToEveryoneSeenBy.length);
+        setIsRinging(false);
+      }
+    }
+  }, [ringToEveryoneSeenBy]);
+
+  useEffect(() => {
+    // When you are ringing to someone from another session
+    socket?.on("sendingRinging", ({ ringingTo }) => {
+      // We update the receivers, so that in dashboard we show the
+      // sending ring animation where it correspond
+      ringingTo.map((eachUserToRing) => {
+        setRingReceivers([...ringReceivers, eachUserToRing]);
+      });
+      console.log("ringTo: " + ringingTo);
+      console.log("ringReceivers: " + ringReceivers);
+    });
+
+    socket?.on("ringSeen", (receiver) => {
+      // Hide the individual ring popup in receiver
       setIsRinging(false);
+      // in case was a ring to everyone
+      // but maybe we should hide it once all the receivers have seen the ring and not just one
+      // setIsRingingToEveryone(false);
       // Remove ringReceiver from array, loop and save receiver that are not the current receiver
+      // So that the sender is not longer showing the sending ring animation
       console.log("receiver: " + receiver);
       setRingReceivers(
         ringReceivers.filter(
@@ -146,22 +168,63 @@ function App() {
       );
     });
 
-    socket?.on("ringCanceled", ({ receiver }) => {
+    socket?.on("ringCanceled", (receiver) => {
       // Hide the ring popup in receiver
       setIsRinging(false);
-      // Remove ringReceiver from array, loop and save receiver that are not the current receiver
+      // If we have canceled a ring that is not to everyone
+      // Remove ringReceiver from array, loop and save receivers that are not the current receiver
+      // So that the sender is not longer showing the sending ring animation
       setRingReceivers(
         ringReceivers.filter(
           (eachRingReceiver) => eachRingReceiver !== receiver
         )
       );
+
+      // Hide popup in sender
+      setIsRingingToEveryone(false);
+
+      // Reset value
+      setRingToEveryoneSeenBy([]);
     });
 
     return () => {
+      socket?.off("sendingRinging");
       socket?.off("ringSeen");
       socket?.off("ringCanceled");
     };
   }, [ringReceivers, isRinging]);
+
+  useEffect(() => {
+    // Reset value
+    setRingToEveryoneSeenBy([]);
+    console.log("****first");
+  }, []);
+
+  useEffect(() => {
+    socket?.on("ringReceived", ({ sender, priority }) => {
+      // Only show receiving ringing popup to receivers
+      if (sender !== currentUserData.username) {
+        setRingSender(sender ?? null);
+        setRingPriority(priority);
+        setIsRinging(true);
+        console.log("Ring received from : " + sender);
+      } else {
+        // and if the sender has multiple sessions opened
+        setIsRingingToEveryone(true);
+      }
+    });
+
+    return () => {
+      socket?.off("ringReceived");
+    };
+  }, [currentUserData]);
+
+  useEffect(() => {
+    if (isRingingToEveryone) {
+      // Clear ringReceiver array, in case it was sending individual rings
+      setRingReceivers([]);
+    }
+  }, [isRingingToEveryone]);
 
   return (
     <div>
@@ -171,10 +234,11 @@ function App() {
           errorLoginIn,
           setErrorLoginIn,
           currentUserData,
-          user,
           setUser,
           ringReceivers,
           setRingReceivers,
+          setIsRingingToEveryone,
+          onlineUsers,
         }}
       >
         {
@@ -184,15 +248,21 @@ function App() {
               ringSender={ringSender}
               ringPriority={ringPriority}
               setIsRinging={setIsRinging}
+              ringToEveryoneSeenBy={ringToEveryoneSeenBy}
             />
           )
         }
-        <Navbar
-          isLoggedIn={isLoggedIn}
-          setIsLoggedIn={setIsLoggedIn}
-          onlineUsers={onlineUsers}
-        />
-        <div className="px-4 flex justify-center mt-4 mb-8">
+
+        {
+          // If we are the sender and we're ringing to all online users
+          isRingingToEveryone && (
+            <PopupRingingToEveryone
+              ringToEveryoneSeenBy={ringToEveryoneSeenBy}
+            />
+          )
+        }
+        <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+        <div className="px-4 flex justify-center items-center mt-4 mb-8">
           {hasProblemsConnectingToServer ? (
             <div className="flex flex-col justify-center items-center h-[75vh]">
               <p>Imposible conectarse al servidor.</p>{" "}
@@ -200,6 +270,7 @@ function App() {
             </div>
           ) : !isLoggedIn ? (
             <Login
+              user={user}
               isLoginInAutomatically={isLoginInAutomatically}
               isLoginInManually={isLoginInManually}
               setIsLoginInManually={setIsLoginInManually}

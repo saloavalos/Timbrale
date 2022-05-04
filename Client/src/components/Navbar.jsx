@@ -3,12 +3,12 @@ import userProfilePhoto from "/src/assets/user-profile.png";
 // Context
 import { MainContext } from "../contexts/MainContext";
 
-const Navbar = ({ isLoggedIn, setIsLoggedIn, onlineUsers }) => {
+const Navbar = ({ isLoggedIn }) => {
   const [isProfileMenuActive, setIsProfileMenuActive] = useState(false);
   const [currentUserActiveSessions, setCurrentUserActiveSessions] = useState(0);
 
   // Context values
-  const { socket, currentUserData } = useContext(MainContext);
+  const { socket, currentUserData, onlineUsers } = useContext(MainContext);
 
   const handleLogout = () => {
     // Clear username stored in localStorage
